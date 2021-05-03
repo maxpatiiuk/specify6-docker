@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  specify6:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: run
+      args:
+        version: 6800
+    ports:
+      - "6080:80"
+    networks:
+      - database
+    volumes:
+      - "/dev/shm:/dev/shm"
+    environment:
+      - USER=specify
+      - PASSWORD=specify_root
+
+  db:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: mariadb
+    expose:
+      - '3306'
+    networks:
+      - database
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: master
+      MYSQL_PASSWORD: master
+      MYSQL_DATABASE: specify
+
+volumes:
+  database:
+
+networks:
+  database:
+    driver: bridge
